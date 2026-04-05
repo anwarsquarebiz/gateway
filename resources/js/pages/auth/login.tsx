@@ -111,7 +111,15 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 </div> */}
             </form>
 
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+            {status && (
+                <div
+                    className={`mb-4 text-center text-sm font-medium ${status === 'login-session-expired' ? 'text-amber-700' : 'text-green-600'}`}
+                >
+                    {status === 'login-session-expired'
+                        ? 'Your sign-in session expired. Please enter your email and password again.'
+                        : status}
+                </div>
+            )}
         </AuthLayout>
     );
 }

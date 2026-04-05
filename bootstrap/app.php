@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureLoginTwoFactorPending;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetTenantFromAuthenticatedUser;
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'login.two_factor.pending' => EnsureLoginTwoFactorPending::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

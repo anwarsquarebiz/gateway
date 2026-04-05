@@ -25,6 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'two_factor_enabled',
         'merchant_id',
         'role',
         'payin_fee_percent',
@@ -53,6 +54,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'two_factor_enabled' => 'boolean',
             'merchant_id' => 'integer',
             'role' => UserRole::class,
             'payin_fee_percent' => 'decimal:2',

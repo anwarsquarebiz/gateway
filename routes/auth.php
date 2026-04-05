@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\LoginTwoFactorController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -20,6 +21,16 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    Route::middleware('login.two_factor.pending')->group(function () {
+        Route::get('login/otp', [LoginTwoFactorController::class, 'create'])->name('login.otp');
+        Route::post('login/otp', [LoginTwoFactorController::class, 'store'])
+            ->middleware('throttle:20,1')
+            ->name('login.otp.verify');
+        Route::post('login/otp/resend', [LoginTwoFactorController::class, 'resend'])
+            ->middleware('throttle:6,1')
+            ->name('login.otp.resend');
+    });
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

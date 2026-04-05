@@ -19,12 +19,20 @@ class EmailOtpService
 
         Cache::put($this->cacheKey($user, $purpose, $purposeId), $code, now()->addMinutes(10));
 
-        Mail::raw(
-            "Your verification code is: {$code}\n\nThis code expires in 10 minutes.",
-            function ($message) use ($user) {
-                $message->to($user->email)->subject('Verification code');
-            }
-        );
+        [$body, $subject] = match ($purpose) {
+            'login' => [
+                "Your sign-in code is: {$code}\n\nThis code expires in 10 minutes. If you did not try to sign in, you can ignore this email.",
+                'Your sign-in code',
+            ],
+            default => [
+                "Your verification code is: {$code}\n\nThis code expires in 10 minutes.",
+                'Verification code',
+            ],
+        };
+
+        Mail::raw($body, function ($message) use ($user, $subject) {
+            $message->to($user->email)->subject($subject);
+        });
     }
 
     public function verify(User $user, string $purpose, string $code, ?int $purposeId = null): bool
@@ -52,6 +60,10 @@ class EmailOtpService
 
     private function assertPurposeAllowed(User $user, string $purpose, ?int $purposeId): void
     {
+        if ($purpose === 'login') {
+            return;
+        }
+
         if (in_array($purpose, ['bank_edit', 'usdt_edit', 'upi_edit'], true) && $purposeId === null) {
             abort(422, 'Resource id is required for this verification.');
         }

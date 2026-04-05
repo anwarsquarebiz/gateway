@@ -7,6 +7,7 @@ import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
@@ -25,6 +26,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: auth.user.name,
         email: auth.user.email,
+        two_factor_enabled: auth.user.two_factor_enabled !== false,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -73,6 +75,22 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                             />
 
                             <InputError className="mt-2" message={errors.email} />
+                        </div>
+
+                        <div className="flex items-start space-x-3">
+                            <Checkbox
+                                id="two_factor_enabled"
+                                checked={data.two_factor_enabled}
+                                onCheckedChange={(checked) => setData('two_factor_enabled', checked === true)}
+                            />
+                            <div className="grid gap-1.5 leading-none">
+                                <Label htmlFor="two_factor_enabled" className="cursor-pointer">
+                                    Require sign-in code by email
+                                </Label>
+                                <p className="text-muted-foreground text-sm">
+                                    When enabled, we email you a one-time code after your password on each sign-in.
+                                </p>
+                            </div>
                         </div>
 
                         {mustVerifyEmail && auth.user.email_verified_at === null && (
