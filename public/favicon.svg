@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 42">
+    <rect width="40" height="42" rx="6" fill="hsl(221, 83%, 32%)" />
+    <path
+        fill="#fff"
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M20 2L4 10v15.5C4 33.5 11 40.5 20 42c9-1.5 16-8.5 16-16.5V10L20 2zm0 4.2l11.5 6.2v13.1c0 5.5-4.5 10.5-11.5 12.5-7-2-11.5-7-11.5-12.5V12.2L20 6.2z"
+    />
+    <path
+        d="M13 20.5l4 4 7-8"
+        fill="none"
+        stroke="#fff"
+        stroke-width="2.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
+</svg>
