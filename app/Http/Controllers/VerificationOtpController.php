@@ -23,7 +23,7 @@ class VerificationOtpController extends Controller
             'purpose' => [
                 'required',
                 'string',
-                Rule::in(['withdraw', 'bank_add', 'bank_edit', 'usdt_add', 'usdt_edit']),
+                Rule::in(['withdraw', 'bank_add', 'bank_edit', 'usdt_add', 'usdt_edit', 'upi_add', 'upi_edit']),
             ],
             'purpose_id' => ['nullable', 'integer', 'min:1'],
         ]);

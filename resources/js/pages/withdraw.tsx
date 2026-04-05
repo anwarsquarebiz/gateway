@@ -28,12 +28,18 @@ export interface UsdtWalletRow {
     blockchain_label: string;
 }
 
+export interface UserUpiIdRow {
+    id: number;
+    upi_id: string;
+}
+
 interface WithdrawProps {
     currentBalance: string;
     feePercent: number;
     feeFixedInr: number;
     bankAccounts: BankAccountRow[];
     usdtWallets: UsdtWalletRow[];
+    userUpiIds: UserUpiIdRow[];
 }
 
 function formatInr(value: number): string {
@@ -54,6 +60,9 @@ const FLASH_MESSAGES: Record<string, string> = {
     'usdt-wallet-saved': 'USDT wallet added.',
     'usdt-wallet-updated': 'USDT wallet updated.',
     'usdt-wallet-deleted': 'USDT wallet removed.',
+    'upi-id-saved': 'UPI ID added.',
+    'upi-id-updated': 'UPI ID updated.',
+    'upi-id-deleted': 'UPI ID removed.',
 };
 
 export default function Withdraw({
@@ -62,6 +71,7 @@ export default function Withdraw({
     feeFixedInr,
     bankAccounts,
     usdtWallets,
+    userUpiIds,
 }: WithdrawProps) {
     const page = usePage<SharedData & { flash?: { status?: string | null } }>();
     const flashStatus = page.props.flash?.status;
@@ -80,9 +90,10 @@ export default function Withdraw({
     const balanceNum = parseAmount(currentBalance);
 
     const withdrawForm = useForm({
-        method: 'bank' as 'bank' | 'usdt',
+        method: 'bank' as 'bank' | 'usdt' | 'upi',
         bank_account_id: '',
         usdt_wallet_id: '',
+        user_upi_id: '',
         amount: '',
         payment_password: '',
         otp_code: '',
@@ -98,7 +109,10 @@ export default function Withdraw({
         if (data.method === 'bank') {
             return { ...base, bank_account_id: Number(data.bank_account_id) };
         }
-        return { ...base, usdt_wallet_id: Number(data.usdt_wallet_id) };
+        if (data.method === 'usdt') {
+            return { ...base, usdt_wallet_id: Number(data.usdt_wallet_id) };
+        }
+        return { ...base, user_upi_id: Number(data.user_upi_id) };
     });
 
     const amountNum = parseAmount(withdrawForm.data.amount);
@@ -156,6 +170,20 @@ export default function Withdraw({
         password: '',
     });
 
+    const upiAddForm = useForm({
+        upi_id: '',
+        otp_code: '',
+    });
+
+    const upiEditForm = useForm({
+        upi_id: '',
+        otp_code: '',
+    });
+
+    const upiDeleteForm = useForm({
+        password: '',
+    });
+
     const [addBankOpen, setAddBankOpen] = useState(false);
     const [editBankOpen, setEditBankOpen] = useState(false);
     const [editBank, setEditBank] = useState<BankAccountRow | null>(null);
@@ -167,10 +195,17 @@ export default function Withdraw({
     const [deleteBank, setDeleteBank] = useState<BankAccountRow | null>(null);
     const [deleteUsdt, setDeleteUsdt] = useState<UsdtWalletRow | null>(null);
 
+    const [addUpiOpen, setAddUpiOpen] = useState(false);
+    const [editUpiOpen, setEditUpiOpen] = useState(false);
+    const [editUpi, setEditUpi] = useState<UserUpiIdRow | null>(null);
+    const [deleteUpi, setDeleteUpi] = useState<UserUpiIdRow | null>(null);
+
     const [bankOtpSending, setBankOtpSending] = useState(false);
     const [bankEditOtpSending, setBankEditOtpSending] = useState(false);
     const [usdtOtpSending, setUsdtOtpSending] = useState(false);
     const [usdtEditOtpSending, setUsdtEditOtpSending] = useState(false);
+    const [upiOtpSending, setUpiOtpSending] = useState(false);
+    const [upiEditOtpSending, setUpiEditOtpSending] = useState(false);
 
     const openEditBank = (row: BankAccountRow) => {
         setEditBank(row);
@@ -194,13 +229,25 @@ export default function Withdraw({
         setEditUsdtOpen(true);
     };
 
+    const openEditUpi = (row: UserUpiIdRow) => {
+        setEditUpi(row);
+        upiEditForm.setData({
+            upi_id: row.upi_id,
+            otp_code: '',
+        });
+        setEditUpiOpen(true);
+    };
+
     const bankLabel = (b: BankAccountRow) =>
         `${b.bank_name} — ${b.account_holder} — …${b.account_number.slice(-4)} (${b.ifsc_code})`;
 
     const usdtLabel = (w: UsdtWalletRow) => `${w.public_address.slice(0, 8)}…${w.public_address.slice(-6)} (${w.blockchain_label})`;
 
+    const upiLabel = (u: UserUpiIdRow) => u.upi_id;
+
     const selectedBank = bankAccounts.find((b) => String(b.id) === withdrawForm.data.bank_account_id);
     const selectedUsdt = usdtWallets.find((w) => String(w.id) === withdrawForm.data.usdt_wallet_id);
+    const selectedUpi = userUpiIds.find((u) => String(u.id) === withdrawForm.data.user_upi_id);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -213,7 +260,7 @@ export default function Withdraw({
                         <br />
                         Withdrawal Fee: {feePercent.toFixed(2)}% + {formatInr(feeFixedInr)}
                         <br />
-                        Please select your bank details, enter the amount you wish to withdraw, your payment password, and the 2FA code.
+                        Choose bank transfer, UPI, or USDT, then enter the amount, your payment password, and the 2FA code.
                     </p>
                 </div>
 
@@ -231,13 +278,14 @@ export default function Withdraw({
                             <Label>Withdrawal Method</Label>
                             <Select
                                 value={withdrawForm.data.method}
-                                onValueChange={(v) => withdrawForm.setData('method', v as 'bank' | 'usdt')}
+                                onValueChange={(v) => withdrawForm.setData('method', v as 'bank' | 'usdt' | 'upi')}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Choose method" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="bank">Bank Account (INR)</SelectItem>
+                                    <SelectItem value="upi">UPI (INR)</SelectItem>
                                     <SelectItem value="usdt">USDT wallet</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -274,6 +322,38 @@ export default function Withdraw({
                                         {selectedBank.bank_name} · {selectedBank.account_holder} · {selectedBank.account_number} ·{' '}
                                         {selectedBank.ifsc_code}
                                     </p>
+                                )}
+                            </div>
+                        )}
+
+                        {withdrawForm.data.method === 'upi' && (
+                            <div className="space-y-2">
+                                <div className="flex flex-wrap items-end gap-2">
+                                    <div className="min-w-0 flex-1 space-y-2">
+                                        <Label>Registered UPI ID</Label>
+                                        <Select
+                                            value={withdrawForm.data.user_upi_id}
+                                            onValueChange={(v) => withdrawForm.setData('user_upi_id', v)}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder={userUpiIds.length ? 'Select UPI ID' : 'No UPI IDs yet'} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {userUpiIds.map((u) => (
+                                                    <SelectItem key={u.id} value={String(u.id)}>
+                                                        {upiLabel(u)}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <Button type="button" variant="outline" size="sm" className="shrink-0" onClick={() => setAddUpiOpen(true)}>
+                                        <Plus className="size-4" />
+                                        Add new
+                                    </Button>
+                                </div>
+                                {selectedUpi && (
+                                    <p className="text-muted-foreground font-mono text-xs break-all">{selectedUpi.upi_id}</p>
                                 )}
                             </div>
                         )}
@@ -417,6 +497,50 @@ export default function Withdraw({
                                                                 <Pencil className="size-4" />
                                                             </Button>
                                                             <Button type="button" variant="ghost" size="icon" onClick={() => setDeleteBank(row)}>
+                                                                <Trash2 className="size-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="user-upi-ids">
+                        <h2 className="text-lg font-semibold">Your Registered UPI IDs</h2>
+                        <p className="text-muted-foreground mt-1 text-sm">
+                            Save UPI VPAs (e.g. name@paytm) for INR withdrawals via UPI. Format: handle@psp.
+                        </p>
+                        <div className="border-sidebar-border/70 dark:border-sidebar-border mt-3 overflow-hidden rounded-xl border">
+                            <div className="overflow-x-auto">
+                                <table className="w-full min-w-[32rem] text-left text-sm">
+                                    <thead className="bg-muted/50 border-border border-b">
+                                        <tr>
+                                            <th className="px-4 py-3 font-medium">UPI ID</th>
+                                            <th className="px-4 py-3 font-medium">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {userUpiIds.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={2} className="text-muted-foreground px-4 py-8 text-center">
+                                                    No UPI IDs yet.
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            userUpiIds.map((row) => (
+                                                <tr key={row.id} className="border-border/60 hover:bg-muted/30 border-b last:border-0">
+                                                    <td className="px-4 py-3 font-mono text-xs">{row.upi_id}</td>
+                                                    <td className="px-4 py-3">
+                                                        <div className="flex gap-1">
+                                                            <Button type="button" variant="ghost" size="icon" onClick={() => openEditUpi(row)}>
+                                                                <Pencil className="size-4" />
+                                                            </Button>
+                                                            <Button type="button" variant="ghost" size="icon" onClick={() => setDeleteUpi(row)}>
                                                                 <Trash2 className="size-4" />
                                                             </Button>
                                                         </div>
@@ -828,6 +952,147 @@ export default function Withdraw({
                     </DialogContent>
                 </Dialog>
 
+                {/* Add UPI */}
+                <Dialog open={addUpiOpen} onOpenChange={setAddUpiOpen}>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Add UPI ID</DialogTitle>
+                            <DialogDescription>Enter your VPA (e.g. name@paytm). We email a 6-digit code to verify.</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-3">
+                            <div className="space-y-2">
+                                <Label>UPI ID</Label>
+                                <Input
+                                    value={upiAddForm.data.upi_id}
+                                    onChange={(e) => upiAddForm.setData('upi_id', e.target.value.trim())}
+                                    placeholder="you@paytm"
+                                    className="font-mono text-sm"
+                                />
+                                <InputError message={upiAddForm.errors.upi_id} />
+                            </div>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                disabled={upiOtpSending}
+                                onClick={() => {
+                                    setUpiOtpSending(true);
+                                    router.post(
+                                        route('verification.send-otp'),
+                                        { purpose: 'upi_add' },
+                                        { preserveScroll: true, onFinish: () => setUpiOtpSending(false) },
+                                    );
+                                }}
+                            >
+                                {upiOtpSending ? <Loader2 className="size-4 animate-spin" /> : null}
+                                Send OTP
+                            </Button>
+                            <div className="space-y-2">
+                                <Label>OTP code</Label>
+                                <Input
+                                    inputMode="numeric"
+                                    maxLength={6}
+                                    value={upiAddForm.data.otp_code}
+                                    onChange={(e) => upiAddForm.setData('otp_code', e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                />
+                                <InputError message={upiAddForm.errors.otp_code} />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setAddUpiOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                disabled={upiAddForm.processing}
+                                onClick={() =>
+                                    upiAddForm.post(route('user-upi-ids.store'), {
+                                        preserveScroll: true,
+                                        onSuccess: () => {
+                                            setAddUpiOpen(false);
+                                            upiAddForm.reset();
+                                        },
+                                    })
+                                }
+                            >
+                                Save
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Edit UPI */}
+                <Dialog open={editUpiOpen} onOpenChange={setEditUpiOpen}>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Edit UPI ID</DialogTitle>
+                            <DialogDescription>Send OTP to your email, then enter the code to save.</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-3">
+                            <div className="space-y-2">
+                                <Label>UPI ID</Label>
+                                <Input
+                                    value={upiEditForm.data.upi_id}
+                                    onChange={(e) => upiEditForm.setData('upi_id', e.target.value.trim())}
+                                    className="font-mono text-sm"
+                                />
+                                <InputError message={upiEditForm.errors.upi_id} />
+                            </div>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                disabled={upiEditOtpSending || !editUpi}
+                                onClick={() => {
+                                    if (!editUpi) {
+                                        return;
+                                    }
+                                    setUpiEditOtpSending(true);
+                                    router.post(
+                                        route('verification.send-otp'),
+                                        { purpose: 'upi_edit', purpose_id: editUpi.id },
+                                        { preserveScroll: true, onFinish: () => setUpiEditOtpSending(false) },
+                                    );
+                                }}
+                            >
+                                {upiEditOtpSending ? <Loader2 className="size-4 animate-spin" /> : null}
+                                Send OTP
+                            </Button>
+                            <div className="space-y-2">
+                                <Label>OTP code</Label>
+                                <Input
+                                    inputMode="numeric"
+                                    maxLength={6}
+                                    value={upiEditForm.data.otp_code}
+                                    onChange={(e) => upiEditForm.setData('otp_code', e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                />
+                                <InputError message={upiEditForm.errors.otp_code} />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setEditUpiOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                disabled={upiEditForm.processing || !editUpi}
+                                onClick={() => {
+                                    if (!editUpi) {
+                                        return;
+                                    }
+                                    upiEditForm.patch(route('user-upi-ids.update', editUpi.id), {
+                                        preserveScroll: true,
+                                        onSuccess: () => {
+                                            setEditUpiOpen(false);
+                                            upiEditForm.reset();
+                                        },
+                                    });
+                                }}
+                            >
+                                Save
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
                 {/* Delete bank */}
                 <Dialog
                     open={!!deleteBank}
@@ -918,6 +1183,56 @@ export default function Withdraw({
                                         onSuccess: () => {
                                             setDeleteUsdt(null);
                                             usdtDeleteForm.reset();
+                                        },
+                                    });
+                                }}
+                            >
+                                Remove
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Delete UPI */}
+                <Dialog
+                    open={!!deleteUpi}
+                    onOpenChange={(o) => {
+                        if (!o) {
+                            setDeleteUpi(null);
+                            upiDeleteForm.reset();
+                        }
+                    }}
+                >
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Remove UPI ID</DialogTitle>
+                            <DialogDescription>Enter your password to confirm.</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-2">
+                            <Label>Password</Label>
+                            <Input
+                                type="password"
+                                value={upiDeleteForm.data.password}
+                                onChange={(e) => upiDeleteForm.setData('password', e.target.value)}
+                            />
+                            <InputError message={upiDeleteForm.errors.password} />
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setDeleteUpi(null)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                disabled={upiDeleteForm.processing || !deleteUpi}
+                                onClick={() => {
+                                    if (!deleteUpi) {
+                                        return;
+                                    }
+                                    upiDeleteForm.delete(route('user-upi-ids.destroy', deleteUpi.id), {
+                                        preserveScroll: true,
+                                        onSuccess: () => {
+                                            setDeleteUpi(null);
+                                            upiDeleteForm.reset();
                                         },
                                     });
                                 }}

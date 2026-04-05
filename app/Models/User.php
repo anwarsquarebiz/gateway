@@ -120,6 +120,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return HasMany<UserUpiId, $this>
+     */
+    public function userUpiIds(): HasMany
+    {
+        return $this->hasMany(UserUpiId::class);
+    }
+
+    /**
      * @return HasMany<AdminUpiId, $this>
      */
     public function adminUpiIds(): HasMany

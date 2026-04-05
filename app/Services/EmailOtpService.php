@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\BankAccount;
 use App\Models\UsdtWallet;
 use App\Models\User;
+use App\Models\UserUpiId;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
@@ -51,7 +52,7 @@ class EmailOtpService
 
     private function assertPurposeAllowed(User $user, string $purpose, ?int $purposeId): void
     {
-        if (in_array($purpose, ['bank_edit', 'usdt_edit'], true) && $purposeId === null) {
+        if (in_array($purpose, ['bank_edit', 'usdt_edit', 'upi_edit'], true) && $purposeId === null) {
             abort(422, 'Resource id is required for this verification.');
         }
 
@@ -67,6 +68,16 @@ class EmailOtpService
 
         if ($purpose === 'usdt_edit' && $purposeId !== null) {
             $exists = UsdtWallet::query()
+                ->where('id', $purposeId)
+                ->where('user_id', $user->id)
+                ->exists();
+            if (! $exists) {
+                abort(404);
+            }
+        }
+
+        if ($purpose === 'upi_edit' && $purposeId !== null) {
+            $exists = UserUpiId::query()
                 ->where('id', $purposeId)
                 ->where('user_id', $user->id)
                 ->exists();

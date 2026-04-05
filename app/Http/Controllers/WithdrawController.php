@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BankAccount;
 use App\Models\UsdtWallet;
 use App\Models\User;
+use App\Models\UserUpiId;
 use App\Models\WalletBalance;
 use App\Models\WithdrawalRequest;
 use App\Services\EmailOtpService;
@@ -51,12 +52,21 @@ class WithdrawController extends Controller
                 'blockchain_label' => $w->blockchain->label(),
             ]);
 
+        $userUpiIds = $user->userUpiIds()
+            ->orderBy('upi_id')
+            ->get()
+            ->map(fn (UserUpiId $u) => [
+                'id' => $u->id,
+                'upi_id' => $u->upi_id,
+            ]);
+
         return Inertia::render('withdraw', [
             'currentBalance' => $balance,
             'feePercent' => $feePercent,
             'feeFixedInr' => $feeFixed,
             'bankAccounts' => $bankAccounts,
             'usdtWallets' => $usdtWallets,
+            'userUpiIds' => $userUpiIds,
         ]);
     }
 
@@ -69,7 +79,7 @@ class WithdrawController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'method' => ['required', 'string', Rule::in(['bank', 'usdt'])],
+            'method' => ['required', 'string', Rule::in(['bank', 'usdt', 'upi'])],
             'bank_account_id' => [
                 'required_if:method,bank',
                 'exclude_unless:method,bank',
@@ -81,6 +91,12 @@ class WithdrawController extends Controller
                 'exclude_unless:method,usdt',
                 'integer',
                 Rule::exists('usdt_wallets', 'id')->where('user_id', $user->id),
+            ],
+            'user_upi_id' => [
+                'required_if:method,upi',
+                'exclude_unless:method,upi',
+                'integer',
+                Rule::exists('user_upi_ids', 'id')->where('user_id', $user->id),
             ],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'payment_password' => ['required', 'current_password'],
@@ -107,6 +123,7 @@ class WithdrawController extends Controller
             'method' => $validated['method'],
             'bank_account_id' => $validated['method'] === 'bank' ? (int) $validated['bank_account_id'] : null,
             'usdt_wallet_id' => $validated['method'] === 'usdt' ? (int) $validated['usdt_wallet_id'] : null,
+            'user_upi_id' => $validated['method'] === 'upi' ? (int) $validated['user_upi_id'] : null,
             'amount' => $amount,
             'fee_percent' => $feePercent,
             'fee_fixed' => $feeFixed,

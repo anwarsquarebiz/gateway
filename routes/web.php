@@ -13,8 +13,10 @@ use App\Http\Controllers\NowPaymentsIpnController;
 use App\Http\Controllers\PayinDocsController;
 use App\Http\Controllers\PaymentOrderController;
 use App\Http\Controllers\PayOrderController;
+use App\Http\Controllers\PayoutDocsController;
 use App\Http\Controllers\SubmitPayOrderUtrController;
 use App\Http\Controllers\UsdtWalletController;
+use App\Http\Controllers\UserUpiIdController;
 use App\Http\Controllers\VerificationOtpController;
 use App\Http\Controllers\WithdrawController;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('payin', PayinDocsController::class)->name('docs.payin');
 
+    Route::get('payout', PayoutDocsController::class)->name('docs.payout');
+
     Route::get('payment-orders', [PaymentOrderController::class, 'index'])->name('payment-orders');
 
     Route::get('fund-details', [FundDetailController::class, 'index'])->name('fund-details');
@@ -58,6 +62,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('bank-accounts', [BankAccountController::class, 'store'])->name('bank-accounts.store');
     Route::patch('bank-accounts/{bankAccount}', [BankAccountController::class, 'update'])->name('bank-accounts.update');
     Route::delete('bank-accounts/{bankAccount}', [BankAccountController::class, 'destroy'])->name('bank-accounts.destroy');
+
+    Route::post('user-upi-ids', [UserUpiIdController::class, 'store'])->name('user-upi-ids.store');
+    Route::patch('user-upi-ids/{userUpiId}', [UserUpiIdController::class, 'update'])->name('user-upi-ids.update');
+    Route::delete('user-upi-ids/{userUpiId}', [UserUpiIdController::class, 'destroy'])->name('user-upi-ids.destroy');
 
     Route::post('usdt-wallets', [UsdtWalletController::class, 'store'])->name('usdt-wallets.store');
     Route::patch('usdt-wallets/{usdtWallet}', [UsdtWalletController::class, 'update'])->name('usdt-wallets.update');

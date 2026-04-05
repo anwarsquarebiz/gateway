@@ -71,9 +71,8 @@ const mainNavItems: NavItem[] = [
                 url: '/payin',
             },
             {
-                title: 'Payout Docs',
+                title: 'Payment orders (Payout)',
                 url: '/payout',
-                // icon: Banknote,
             },
         ],
     },
@@ -84,6 +83,11 @@ const footerNavItems: NavItem[] = [
         title: 'Bank Accounts',
         url: '/withdraw#bank-accounts',
         icon: Banknote,
+    },
+    {
+        title: 'UPI IDs',
+        url: '/withdraw#user-upi-ids',
+        icon: Smartphone,
     },
     {
         title: 'USDT Wallet',

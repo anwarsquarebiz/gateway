@@ -16,6 +16,7 @@ class WithdrawalRequest extends Model
         'method',
         'bank_account_id',
         'usdt_wallet_id',
+        'user_upi_id',
         'amount',
         'fee_percent',
         'fee_fixed',
@@ -34,6 +35,7 @@ class WithdrawalRequest extends Model
             'merchant_id' => 'integer',
             'bank_account_id' => 'integer',
             'usdt_wallet_id' => 'integer',
+            'user_upi_id' => 'integer',
             'amount' => 'decimal:2',
             'fee_percent' => 'decimal:2',
             'fee_fixed' => 'decimal:2',
@@ -64,5 +66,13 @@ class WithdrawalRequest extends Model
     public function usdtWallet(): BelongsTo
     {
         return $this->belongsTo(UsdtWallet::class);
+    }
+
+    /**
+     * @return BelongsTo<UserUpiId, $this>
+     */
+    public function userUpiId(): BelongsTo
+    {
+        return $this->belongsTo(UserUpiId::class, 'user_upi_id');
     }
 }
