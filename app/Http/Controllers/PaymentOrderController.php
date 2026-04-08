@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PaymentOrder;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,10 +14,15 @@ class PaymentOrderController extends Controller
     /**
      * Display a listing of payment orders.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
         /** @var User $user */
         $user = $request->user();
+
+        // Merchant Center: allow only merchant/admin.
+        if (! $user->isAdmin() && ! $user->isMerchant()) {
+            return redirect()->route('dashboard');
+        }
 
         $query = PaymentOrder::query()->orderByDesc('created_at');
 

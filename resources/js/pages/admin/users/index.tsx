@@ -14,6 +14,8 @@ export interface AdminUserRow {
     email: string;
     role: string;
     merchant_id: number | null;
+    broker_id: number | null;
+    broker: { id: number; name: string; email: string } | null;
     payin_fee_percent: string;
     payout_fee_percent: string;
     created_at: string | null;
@@ -111,6 +113,7 @@ export default function AdminUsersIndex({ users }: IndexProps) {
                                     <th className="px-4 py-3 font-medium">Email</th>
                                     <th className="px-4 py-3 font-medium">Role</th>
                                     <th className="px-4 py-3 font-medium">Merchant ID</th>
+                                    <th className="px-4 py-3 font-medium">Broker</th>
                                     <th className="px-4 py-3 text-right font-medium">Payin fee</th>
                                     <th className="px-4 py-3 text-right font-medium">Payout fee</th>
                                     <th className="px-4 py-3 font-medium">Joined</th>
@@ -120,7 +123,7 @@ export default function AdminUsersIndex({ users }: IndexProps) {
                             <tbody>
                                 {users.data.length === 0 ? (
                                     <tr>
-                                        <td colSpan={8} className="text-muted-foreground px-4 py-10 text-center">
+                                        <td colSpan={9} className="text-muted-foreground px-4 py-10 text-center">
                                             No users yet.
                                         </td>
                                     </tr>
@@ -132,6 +135,15 @@ export default function AdminUsersIndex({ users }: IndexProps) {
                                             <td className="px-4 py-3 capitalize">{row.role}</td>
                                             <td className="text-muted-foreground px-4 py-3 font-mono text-xs">
                                                 {row.merchant_id ?? '—'}
+                                            </td>
+                                            <td className="text-muted-foreground px-4 py-3 text-xs">
+                                                {row.broker ? (
+                                                    <span>
+                                                        {row.broker.name} <span className="font-mono">({row.broker.email})</span>
+                                                    </span>
+                                                ) : (
+                                                    '—'
+                                                )}
                                             </td>
                                             <td className="px-4 py-3 text-right tabular-nums text-xs">{formatPercent(row.payin_fee_percent)}</td>
                                             <td className="px-4 py-3 text-right tabular-nums text-xs">{formatPercent(row.payout_fee_percent)}</td>

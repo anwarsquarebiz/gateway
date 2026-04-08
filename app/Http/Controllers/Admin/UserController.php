@@ -23,6 +23,7 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         $users = User::query()
+            ->with(['broker:id,name,email'])
             ->orderBy('name')
             ->paginate(20)
             ->through(fn (User $u) => [
@@ -31,6 +32,12 @@ class UserController extends Controller
                 'email' => $u->email,
                 'role' => $u->role->value,
                 'merchant_id' => $u->merchant_id,
+                'broker_id' => $u->broker_id,
+                'broker' => $u->broker ? [
+                    'id' => $u->broker->id,
+                    'name' => $u->broker->name,
+                    'email' => $u->broker->email,
+                ] : null,
                 'payin_fee_percent' => (string) $u->payin_fee_percent,
                 'payout_fee_percent' => (string) $u->payout_fee_percent,
                 'created_at' => $u->created_at?->toIso8601String(),
@@ -46,7 +53,14 @@ class UserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('admin/users/create');
+        $brokers = User::query()
+            ->where('role', UserRole::Broker)
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
+
+        return Inertia::render('admin/users/create', [
+            'brokers' => $brokers,
+        ]);
     }
 
     /**
@@ -64,6 +78,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', Rule::in(array_map(fn (UserRole $r) => $r->value, UserRole::cases()))],
+            'broker_id' => ['nullable', 'integer', Rule::exists('users', 'id')->where('role', UserRole::Broker->value)],
             'payin_fee_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'payout_fee_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
@@ -79,6 +94,7 @@ class UserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'merchant_id' => $merchantId,
+            'broker_id' => $role === UserRole::Merchant ? ($validated['broker_id'] ?? null) : null,
             'role' => $role,
             'email_verified_at' => now(),
             'payin_fee_percent' => $validated['payin_fee_percent'] ?? 11,
@@ -95,6 +111,11 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
+        $brokers = User::query()
+            ->where('role', UserRole::Broker)
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
+
         return Inertia::render('admin/users/edit', [
             'user' => [
                 'id' => $user->id,
@@ -102,11 +123,13 @@ class UserController extends Controller
                 'email' => $user->email,
                 'role' => $user->role->value,
                 'merchant_id' => $user->merchant_id,
+                'broker_id' => $user->broker_id,
                 'payin_api_key' => $user->payin_api_key,
                 'payout_api_key' => $user->payout_api_key,
                 'payin_fee_percent' => (string) $user->payin_fee_percent,
                 'payout_fee_percent' => (string) $user->payout_fee_percent,
             ],
+            'brokers' => $brokers,
         ]);
     }
 
@@ -119,6 +142,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'role' => ['required', 'string', Rule::in(array_map(fn (UserRole $r) => $r->value, UserRole::cases()))],
+            'broker_id' => ['nullable', 'integer', Rule::exists('users', 'id')->where('role', UserRole::Broker->value)],
             'payin_fee_percent' => ['required', 'numeric', 'min:0', 'max:100'],
             'payout_fee_percent' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
@@ -145,6 +169,7 @@ class UserController extends Controller
             'email' => $validated['email'],
             'role' => $newRole,
             'merchant_id' => $merchantId,
+            'broker_id' => $newRole === UserRole::Merchant ? ($validated['broker_id'] ?? null) : null,
             'payin_fee_percent' => $validated['payin_fee_percent'],
             'payout_fee_percent' => $validated['payout_fee_percent'],
         ];

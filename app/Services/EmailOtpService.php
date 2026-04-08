@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserUpiId;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class EmailOtpService
 {
@@ -18,6 +19,8 @@ class EmailOtpService
         $code = str_pad((string) random_int(0, 999_999), 6, '0', STR_PAD_LEFT);
 
         Cache::put($this->cacheKey($user, $purpose, $purposeId), $code, now()->addMinutes(10));
+
+        Log::info('Email OTP sent to ' . $user->email . ' for purpose ' . $purpose . ' with code ' . $code);
 
         [$body, $subject] = match ($purpose) {
             'login' => [

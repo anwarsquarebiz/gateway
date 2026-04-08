@@ -20,6 +20,7 @@ class DashboardController extends Controller
 
         $label = 'Wallet balance';
         $balance = null;
+        $brokerStats = null;
 
         if ($user->merchant_id !== null) {
             $row = WalletBalance::query()->where('merchant_id', $user->merchant_id)->first();
@@ -28,6 +29,19 @@ class DashboardController extends Controller
             $label = 'Total wallet balances';
             $sum = WalletBalance::query()->sum('balance');
             $balance = $sum !== null ? number_format((float) $sum, 2, '.', '') : '0.00';
+        } elseif ($user->isBroker()) {
+            $label = 'Wallet balance';
+            $row = WalletBalance::query()->where('merchant_id', $user->id)->first();
+            $balance = $row !== null ? (string) $row->balance : '0.00';
+
+            $brokerStats = [
+                'wallet_balance' => $balance,
+                'payin_fee_percent' => (string) $user->payin_fee_percent,
+                'merchant_count' => User::query()
+                    ->where('role', \App\Enums\UserRole::Merchant)
+                    ->where('broker_id', $user->id)
+                    ->count(),
+            ];
         }
 
         $merchantCredentials = null;
@@ -44,6 +58,7 @@ class DashboardController extends Controller
             'walletBalance' => $balance,
             'walletBalanceLabel' => $label,
             'merchantCredentials' => $merchantCredentials,
+            'brokerStats' => $brokerStats,
         ]);
     }
 }

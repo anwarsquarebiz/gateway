@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'password',
         'two_factor_enabled',
         'merchant_id',
+        'broker_id',
         'role',
         'payin_fee_percent',
         'payout_fee_percent',
@@ -56,6 +58,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_enabled' => 'boolean',
             'merchant_id' => 'integer',
+            'broker_id' => 'integer',
             'role' => UserRole::class,
             'payin_fee_percent' => 'decimal:2',
             'payout_fee_percent' => 'decimal:2',
@@ -103,6 +106,42 @@ class User extends Authenticatable
     public function isMerchant(): bool
     {
         return $this->role === UserRole::Merchant;
+    }
+
+    /**
+     * Broker who referred this merchant (brokers are users too).
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function broker(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'broker_id');
+    }
+
+    /**
+     * Merchants referred by this broker user.
+     *
+     * @return HasMany<User, $this>
+     */
+    public function referredMerchants(): HasMany
+    {
+        return $this->hasMany(self::class, 'broker_id');
+    }
+
+    /**
+     * @return HasMany<BrokerPayout, $this>
+     */
+    public function brokerPayouts(): HasMany
+    {
+        return $this->hasMany(BrokerPayout::class);
+    }
+
+    /**
+     * @return HasMany<BrokerCommission, $this>
+     */
+    public function brokerCommissions(): HasMany
+    {
+        return $this->hasMany(BrokerCommission::class);
     }
 
     /**

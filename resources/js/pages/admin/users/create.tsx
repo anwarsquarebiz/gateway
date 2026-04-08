@@ -19,17 +19,29 @@ interface CreateUserForm {
     name: string;
     email: string;
     role: UserRole;
+    broker_id: string;
     password: string;
     password_confirmation: string;
     payin_fee_percent: string;
     payout_fee_percent: string;
 }
 
-export default function AdminCreateUser() {
-    const { data, setData, post, processing, errors, reset } = useForm<CreateUserForm>({
+interface BrokerOption {
+    id: number;
+    name: string;
+    email: string;
+}
+
+interface CreateProps {
+    brokers: BrokerOption[];
+}
+
+export default function AdminCreateUser({ brokers }: CreateProps) {
+    const { data, setData, post, processing, errors, reset, transform } = useForm<CreateUserForm>({
         name: '',
         email: '',
         role: 'merchant',
+        broker_id: 'none',
         password: '',
         password_confirmation: '',
         payin_fee_percent: '11.00',
@@ -38,6 +50,10 @@ export default function AdminCreateUser() {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        transform((d) => ({
+            ...d,
+            broker_id: d.role !== 'merchant' || d.broker_id === 'none' ? null : d.broker_id,
+        }));
         post(route('admin.users.store'), {
             preserveScroll: true,
             onSuccess: () => {
@@ -99,7 +115,13 @@ export default function AdminCreateUser() {
                                 <Label>Role</Label>
                                 <Select
                                     value={data.role}
-                                    onValueChange={(v) => setData('role', v as UserRole)}
+                                    onValueChange={(v) => {
+                                        const role = v as UserRole;
+                                        setData('role', role);
+                                        if (role !== 'merchant') {
+                                            setData('broker_id', 'none');
+                                        }
+                                    }}
                                     disabled={processing}
                                 >
                                     <SelectTrigger>
@@ -113,6 +135,30 @@ export default function AdminCreateUser() {
                                 </Select>
                                 <InputError message={errors.role} />
                             </div>
+
+                            {data.role === 'merchant' ? (
+                                <div className="space-y-2">
+                                    <Label>Broker</Label>
+                                    <Select
+                                        value={data.broker_id}
+                                        onValueChange={(v) => setData('broker_id', v)}
+                                        disabled={processing}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="No broker (direct)" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">No broker (direct)</SelectItem>
+                                            {brokers.map((b) => (
+                                                <SelectItem key={b.id} value={String(b.id)}>
+                                                    {b.name} ({b.email})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={errors.broker_id} />
+                                </div>
+                            ) : null}
 
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">

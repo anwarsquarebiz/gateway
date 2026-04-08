@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CollectionOrder;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,10 +14,15 @@ class CollectionOrderController extends Controller
     /**
      * Display a listing of collection orders.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): Response|RedirectResponse
     {
         /** @var User $user */
         $user = $request->user();
+
+        // Merchant Center: allow only merchant/admin.
+        if (! $user->isAdmin() && ! $user->isMerchant()) {
+            return redirect()->route('dashboard');
+        }
 
         $query = CollectionOrder::query()->orderByDesc('created_at');
 
@@ -40,6 +46,7 @@ class CollectionOrderController extends Controller
             'nowpayments_pay_amount' => $order->nowpayments_pay_amount,
             'nowpayments_pay_currency' => $order->nowpayments_pay_currency,
             'amount' => $order->amount,
+            'payment_reference_id' => $order->payment_reference_id,
             'fee' => $order->fee,
             'final_amount' => $order->final_amount,
             'status' => $order->status->value,

@@ -23,10 +23,17 @@ export interface MerchantCredentials {
     payout_fee_percent: string;
 }
 
+interface BrokerStats {
+    wallet_balance: string;
+    payin_fee_percent: string;
+    merchant_count: number;
+}
+
 interface DashboardProps {
     walletBalance: string | null;
     walletBalanceLabel: string;
     merchantCredentials: MerchantCredentials | null;
+    brokerStats: BrokerStats | null;
 }
 
 const FLASH: Record<string, string> = {
@@ -50,7 +57,7 @@ function formatPercent(value: string): string {
     return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export default function Dashboard({ walletBalance, walletBalanceLabel, merchantCredentials }: DashboardProps) {
+export default function Dashboard({ walletBalance, walletBalanceLabel, merchantCredentials, brokerStats }: DashboardProps) {
     const page = usePage<SharedData & { flash?: { status?: string | null } }>();
     const [flashMessage, setFlashMessage] = useState<string | null>(null);
     const [regenerating, setRegenerating] = useState<'payin' | 'payout' | null>(null);
@@ -94,21 +101,60 @@ export default function Dashboard({ walletBalance, walletBalanceLabel, merchantC
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 {flashMessage && <div className="bg-muted rounded-lg border px-4 py-3 text-sm">{flashMessage}</div>}
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <Card className="border-sidebar-border/70 dark:border-sidebar-border relative overflow-hidden shadow-xs">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <div>
-                                <CardTitle className="text-base font-medium">{walletBalanceLabel}</CardTitle>
-                                <CardDescription>Current available balance</CardDescription>
-                            </div>
-                            <Wallet className="text-muted-foreground size-8 shrink-0" aria-hidden />
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-3xl font-semibold tabular-nums tracking-tight">
-                                {walletBalance !== null ? formatMoney(walletBalance) : '—'}
-                            </p>
-                        </CardContent>
-                    </Card>
-                    {merchantCredentials ? (
+                    {brokerStats ? (
+                        <>
+                            <Card className="border-sidebar-border/70 dark:border-sidebar-border relative overflow-hidden shadow-xs">
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <div>
+                                        <CardTitle className="text-base font-medium">Wallet balance</CardTitle>
+                                        <CardDescription>Current available balance</CardDescription>
+                                    </div>
+                                    <Wallet className="text-muted-foreground size-8 shrink-0" aria-hidden />
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                                        {formatMoney(brokerStats.wallet_balance)}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                            <Card className="border-sidebar-border/70 dark:border-sidebar-border shadow-xs">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-base font-medium">Payin fee</CardTitle>
+                                    <CardDescription>Your payin fee percentage</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                                        {formatPercent(brokerStats.payin_fee_percent)}%
+                                    </p>
+                                </CardContent>
+                            </Card>
+                            <Card className="border-sidebar-border/70 dark:border-sidebar-border shadow-xs">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-base font-medium">Referred merchants</CardTitle>
+                                    <CardDescription>Total merchants linked to your broker ID</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-3xl font-semibold tabular-nums tracking-tight">{brokerStats.merchant_count}</p>
+                                </CardContent>
+                            </Card>
+                        </>
+                    ) : (
+                        <Card className="border-sidebar-border/70 dark:border-sidebar-border relative overflow-hidden shadow-xs">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <div>
+                                    <CardTitle className="text-base font-medium">{walletBalanceLabel}</CardTitle>
+                                    <CardDescription>Current available balance</CardDescription>
+                                </div>
+                                <Wallet className="text-muted-foreground size-8 shrink-0" aria-hidden />
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                                    {walletBalance !== null ? formatMoney(walletBalance) : '—'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
+                    {!brokerStats && merchantCredentials ? (
                         <>
                             <Card className="border-sidebar-border/70 dark:border-sidebar-border shadow-xs">
                                 <CardHeader className="pb-2">
@@ -135,17 +181,17 @@ export default function Dashboard({ walletBalance, walletBalanceLabel, merchantC
                         </>
                     ) : (
                         <>
-                            <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
+                            <div className="hidden border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
                                 <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                             </div>
-                            <div className="border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
+                            <div className="hidden border-sidebar-border/70 dark:border-sidebar-border relative aspect-video overflow-hidden rounded-xl border">
                                 <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                             </div>
                         </>
                     )}
                 </div>
 
-                {merchantCredentials && (
+                {!brokerStats && merchantCredentials && (
                     <Card className="border-sidebar-border/70 dark:border-sidebar-border shadow-xs">
                         <CardHeader>
                             <div className="flex flex-row items-center gap-2">
@@ -235,7 +281,7 @@ export default function Dashboard({ walletBalance, walletBalanceLabel, merchantC
                     </Card>
                 )}
 
-                {!merchantCredentials && (
+                {!brokerStats && !merchantCredentials && (
                     <div className="border-sidebar-border/70 dark:border-sidebar-border relative min-h-[100vh] flex-1 rounded-xl border md:min-h-min">
                         <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                     </div>

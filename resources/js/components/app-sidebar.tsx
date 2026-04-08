@@ -57,6 +57,25 @@ const mainNavItems: NavItem[] = [
         ],
     },
     {
+        title: 'Brokers Center',
+        url: '/brokers-center',
+        icon: Users,
+        items: [
+            {
+                title: 'Merchants',
+                url: '/merchants',
+            },
+            {
+                title: 'Commission',
+                url: '/commission',
+            },
+            {
+                title: 'Payouts',
+                url: '/payouts',
+            },            
+        ],
+    },
+    {
         title: 'Withdraw',
         url: '/withdraw',
         icon: CircleDollarSign
@@ -98,7 +117,22 @@ const footerNavItems: NavItem[] = [
 
 export function AppSidebar() {
     const page = usePage<SharedData>();
-    const isAdmin = page.props.auth.user?.role === 'admin';
+    const role = page.props.auth.user?.role;
+    const isAdmin = role === 'admin';
+    const isBroker = role === 'broker';
+    const isMerchant = role === 'merchant';
+
+    const visibleMainNavItems = mainNavItems.filter((item) => {
+        if (item.title === 'Brokers Center') {
+            return isAdmin || isBroker;
+        }
+
+        if (item.title === 'Merchants Center') {
+            return isAdmin || isMerchant;
+        }
+
+        return true;
+    });
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -115,7 +149,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={visibleMainNavItems} />
                 {isAdmin && (
                     <SidebarGroup className="px-2 py-0">
                         <SidebarGroupLabel>Administration</SidebarGroupLabel>

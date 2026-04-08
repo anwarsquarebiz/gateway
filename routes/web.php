@@ -5,6 +5,9 @@ use App\Http\Controllers\Admin\AdminUsdtAddressController;
 use App\Http\Controllers\Admin\CollectionOrderReviewController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BrokerCommissionController;
+use App\Http\Controllers\BrokerMerchantController;
+use App\Http\Controllers\BrokerPayoutController;
 use App\Http\Controllers\CollectionOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FundDetailController;
@@ -52,6 +55,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('payment-orders', [PaymentOrderController::class, 'index'])->name('payment-orders');
 
     Route::get('fund-details', [FundDetailController::class, 'index'])->name('fund-details');
+    Route::get('merchants', [BrokerMerchantController::class, 'index'])->name('merchants.index');
+    Route::get('commission', [BrokerCommissionController::class, 'index'])->name('commission.index');
+    Route::get('payouts', [BrokerPayoutController::class, 'index'])->name('payouts.index');
 
     Route::get('withdraw', [WithdrawController::class, 'index'])->name('withdraw');
     Route::post('withdraw', [WithdrawController::class, 'store'])->name('withdraw.store');

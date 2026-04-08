@@ -20,6 +20,7 @@ export interface CollectionOrderRow {
     nowpayments_pay_amount: string | null;
     nowpayments_pay_currency: string | null;
     amount: string;
+    payment_reference_id: string | null;
     fee: string;
     final_amount: string;
     status: CollectionOrderStatus;
@@ -101,7 +102,7 @@ export default function CollectionOrders({ orders, isAdmin = false }: Collection
 
     const reviewError = (page.props.errors as { review?: string }).review;
 
-    const colSpan = isAdminUser ? 12 : 11;
+    const colSpan = isAdminUser ? 13 : 12;
 
     const canReviewOrder = (status: CollectionOrderStatus) => status === 'created' || status === 'submitted';
 
@@ -134,7 +135,7 @@ export default function CollectionOrders({ orders, isAdmin = false }: Collection
 
                 <div className="border-sidebar-border/70 dark:border-sidebar-border overflow-hidden rounded-xl border">
                     <div className="overflow-x-auto">
-                        <table className="w-full min-w-[68rem] text-left text-sm">
+                        <table className="w-full min-w-[76rem] text-left text-sm">
                             <thead className="bg-muted/50 border-border border-b">
                                 <tr>
                                     <th className="px-4 py-3 font-medium">Order no</th>
@@ -143,6 +144,7 @@ export default function CollectionOrders({ orders, isAdmin = false }: Collection
                                     <th className="px-4 py-3 font-medium">Type</th>
                                     <th className="px-4 py-3 font-medium">Pay to</th>
                                     <th className="px-4 py-3 text-right font-medium">Amount</th>
+                                    <th className="px-4 py-3 font-medium">Payment ref.</th>
                                     <th className="px-4 py-3 text-right font-medium">Fee</th>
                                     <th className="px-4 py-3 text-right font-medium">Final</th>
                                     <th className="px-4 py-3 font-medium">Status</th>
@@ -184,6 +186,12 @@ export default function CollectionOrders({ orders, isAdmin = false }: Collection
                                                       : '—'}
                                             </td>
                                             <td className="px-4 py-3 text-right tabular-nums">{formatMoney(row.amount)}</td>
+                                            <td
+                                                className="text-muted-foreground max-w-[12rem] truncate px-4 py-3 font-mono text-xs"
+                                                title={row.payment_reference_id ?? ''}
+                                            >
+                                                {row.payment_reference_id ?? '—'}
+                                            </td>
                                             <td className="px-4 py-3 text-right tabular-nums">{formatMoney(row.fee)}</td>
                                             <td className="px-4 py-3 text-right tabular-nums">{formatMoney(row.final_amount)}</td>
                                             <td className="px-4 py-3 capitalize">{row.status}</td>

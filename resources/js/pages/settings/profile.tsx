@@ -77,7 +77,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                             <InputError className="mt-2" message={errors.email} />
                         </div>
 
-                        <div className="flex items-start space-x-3">
+                        {/* <div className="flex items-start space-x-3">
                             <Checkbox
                                 id="two_factor_enabled"
                                 checked={data.two_factor_enabled}
@@ -91,7 +91,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                     When enabled, we email you a one-time code after your password on each sign-in.
                                 </p>
                             </div>
-                        </div>
+                        </div> */}
 
                         {mustVerifyEmail && auth.user.email_verified_at === null && (
                             <div>

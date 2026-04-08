@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\BankAccount;
 use App\Models\UsdtWallet;
 use App\Models\User;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Log;
 
 class WithdrawController extends Controller
 {
@@ -34,7 +36,7 @@ class WithdrawController extends Controller
         $bankAccounts = $user->bankAccounts()
             ->orderBy('bank_name')
             ->get()
-            ->map(fn (BankAccount $b) => [
+            ->map(fn(BankAccount $b) => [
                 'id' => $b->id,
                 'bank_name' => $b->bank_name,
                 'account_holder' => $b->account_holder,
@@ -45,7 +47,7 @@ class WithdrawController extends Controller
         $usdtWallets = $user->usdtWallets()
             ->orderBy('id')
             ->get()
-            ->map(fn (UsdtWallet $w) => [
+            ->map(fn(UsdtWallet $w) => [
                 'id' => $w->id,
                 'public_address' => $w->public_address,
                 'blockchain' => $w->blockchain->value,
@@ -55,7 +57,7 @@ class WithdrawController extends Controller
         $userUpiIds = $user->userUpiIds()
             ->orderBy('upi_id')
             ->get()
-            ->map(fn (UserUpiId $u) => [
+            ->map(fn(UserUpiId $u) => [
                 'id' => $u->id,
                 'upi_id' => $u->upi_id,
             ]);
@@ -108,11 +110,21 @@ class WithdrawController extends Controller
         }
 
         $amount = round((float) $validated['amount'], 2);
-        $feeAmount = round($amount * $feePercent / 100, 2);
-        $totalDeducted = round($amount + $feeAmount + $feeFixed, 2);
+
+        // if not broker then
+        if ($user->role !== UserRole::Broker) {
+            $feeAmount = round($amount * $feePercent / 100, 2);
+            $totalDeducted = round($amount + $feeAmount + $feeFixed, 2);
+        } else {
+            $feeAmount = 0;
+            $totalDeducted = $amount;
+        }
 
         $balanceStr = $this->resolveBalance($user);
         $balance = (float) $balanceStr;
+
+        Log::info('Withdrawal request created: ' . $totalDeducted . ' Balance: ' . $balance);
+
         if ($totalDeducted > $balance) {
             return back()->withErrors(['amount' => 'Total deduction exceeds your current balance.'])->withInput();
         }
@@ -137,11 +149,24 @@ class WithdrawController extends Controller
 
     private function resolveBalance(User $user): string
     {
-        if ($user->merchant_id !== null) {
+        // if ($user->merchant_id !== null) {
+
+        if ($user->isBroker()) {
+
+            Log::info('Resolving balance for broker: ' . $user->id);
+            $row = WalletBalance::query()->where('merchant_id', $user->id)->first();
+
+            return $row !== null ? (string) $row->balance : '0.00';
+        }
+
+        if ($user->isMerchant()) {
+
+            Log::info('Resolving balance for merchant: ' . $user->merchant_id);
             $row = WalletBalance::query()->where('merchant_id', $user->merchant_id)->first();
 
             return $row !== null ? (string) $row->balance : '0.00';
         }
+        // }
 
         if ($user->isAdmin()) {
             $sum = WalletBalance::query()->sum('balance');

@@ -17,21 +17,29 @@ interface EditUserProps {
         email: string;
         role: UserRole;
         merchant_id: number | null;
+        broker_id: number | null;
         payin_api_key: string | null;
         payout_api_key: string | null;
         payin_fee_percent: string;
         payout_fee_percent: string;
     };
+    brokers: {
+        id: number;
+        name: string;
+        email: string;
+    }[];
 }
 
 interface EditUserForm {
     name: string;
     email: string;
     role: UserRole;
+    broker_id: string;
     password: string;
     password_confirmation: string;
     payin_fee_percent: string;
     payout_fee_percent: string;
+    [key: string]: string | UserRole;
 }
 
 const FLASH: Record<string, string> = {
@@ -39,7 +47,7 @@ const FLASH: Record<string, string> = {
     'payout-api-key-regenerated': 'Payout API key was regenerated for this user.',
 };
 
-export default function AdminEditUser({ user }: EditUserProps) {
+export default function AdminEditUser({ user, brokers }: EditUserProps) {
     const page = usePage<SharedData & { flash?: { status?: string | null } }>();
     const [flashMessage, setFlashMessage] = useState<string | null>(null);
     const [regenerating, setRegenerating] = useState<'payin' | 'payout' | null>(null);
@@ -54,10 +62,11 @@ export default function AdminEditUser({ user }: EditUserProps) {
         { title: `Edit: ${user.name}`, href: `/admin/users/${user.id}/edit` },
     ];
 
-    const { data, setData, patch, processing, errors } = useForm<EditUserForm>({
+    const { data, setData, patch, processing, errors, transform } = useForm<EditUserForm>({
         name: user.name,
         email: user.email,
         role: user.role,
+        broker_id: user.broker_id ? String(user.broker_id) : 'none',
         password: '',
         password_confirmation: '',
         payin_fee_percent: user.payin_fee_percent,
@@ -66,6 +75,10 @@ export default function AdminEditUser({ user }: EditUserProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        transform((d) => ({
+            ...d,
+            broker_id: d.role !== 'merchant' || d.broker_id === 'none' ? null : d.broker_id,
+        }));
         patch(route('admin.users.update', user.id), {
             preserveScroll: true,
         });
@@ -161,7 +174,13 @@ export default function AdminEditUser({ user }: EditUserProps) {
                                 <Label>Role</Label>
                                 <Select
                                     value={data.role}
-                                    onValueChange={(v) => setData('role', v as UserRole)}
+                                    onValueChange={(v) => {
+                                        const role = v as UserRole;
+                                        setData('role', role);
+                                        if (role !== 'merchant') {
+                                            setData('broker_id', 'none');
+                                        }
+                                    }}
                                     disabled={processing}
                                 >
                                     <SelectTrigger>
@@ -175,6 +194,30 @@ export default function AdminEditUser({ user }: EditUserProps) {
                                 </Select>
                                 <InputError message={errors.role} />
                             </div>
+
+                            {data.role === 'merchant' ? (
+                                <div className="space-y-2">
+                                    <Label>Broker</Label>
+                                    <Select
+                                        value={data.broker_id}
+                                        onValueChange={(v) => setData('broker_id', v)}
+                                        disabled={processing}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="No broker (direct)" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">No broker (direct)</SelectItem>
+                                            {brokers.map((b) => (
+                                                <SelectItem key={b.id} value={String(b.id)}>
+                                                    {b.name} ({b.email})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={errors.broker_id} />
+                                </div>
+                            ) : null}
 
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
