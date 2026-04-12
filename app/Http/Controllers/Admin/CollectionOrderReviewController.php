@@ -44,6 +44,11 @@ class CollectionOrderReviewController extends Controller
                 ->where('merchant_id', $order->merchant_id)
                 ->first();
 
+            $wallet = WalletBalance::query()->firstOrCreate(
+                ['merchant_id' => $merchant->id],
+                ['balance' => '0.00']
+            );
+
             if (! $merchant || $merchant->broker_id === null) {
                 return;
             }
@@ -74,6 +79,7 @@ class CollectionOrderReviewController extends Controller
             );
 
             $newBalance = (float) $wallet->balance + $commissionAmount;
+            
             $wallet->update([
                 'balance' => number_format($newBalance, 2, '.', ''),
             ]);
