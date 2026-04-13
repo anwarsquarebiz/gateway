@@ -49,6 +49,12 @@ class CollectionOrderReviewController extends Controller
                 ['balance' => '0.00']
             );
 
+            $newBalance = (float) $wallet->balance + $order->amount;
+            
+            $wallet->update([
+                'balance' => number_format($newBalance, 2, '.', ''),
+            ]);
+
             if (! $merchant || $merchant->broker_id === null) {
                 return;
             }
