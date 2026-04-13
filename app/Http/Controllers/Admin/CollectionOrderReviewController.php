@@ -11,6 +11,7 @@ use App\Models\WalletBalance;
 use App\Services\CollectionOrderMerchantCallback;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CollectionOrderReviewController extends Controller
 {
@@ -35,6 +36,12 @@ class CollectionOrderReviewController extends Controller
         DB::transaction(function () use ($order, $newStatus): void {
             $order->update(['status' => $newStatus]);
 
+            Log::info('Collection order status updated', [
+                'order_id' => $order->id,
+                'merchant_id' => $order->merchant_id,
+                'new_status' => $newStatus,
+            ]);
+
             if ($newStatus !== CollectionOrderStatus::Success) {
                 return;
             }
@@ -45,7 +52,7 @@ class CollectionOrderReviewController extends Controller
                 ->first();
 
             $wallet = WalletBalance::query()->firstOrCreate(
-                ['merchant_id' => $merchant->id],
+                ['merchant_id' => $order->merchant_id],
                 ['balance' => '0.00']
             );
 
@@ -53,6 +60,11 @@ class CollectionOrderReviewController extends Controller
             
             $wallet->update([
                 'balance' => number_format($newBalance, 2, '.', ''),
+            ]);
+
+            Log::info('Wallet balance updated', [
+                'merchant_id' => $merchant->id,
+                'new_balance' => $newBalance,
             ]);
 
             if (! $merchant || $merchant->broker_id === null) {
