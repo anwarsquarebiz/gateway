@@ -56,7 +56,7 @@ class CollectionOrderReviewController extends Controller
                 ['balance' => '0.00']
             );
 
-            $newBalance = (float) $wallet->balance + $order->amount;
+            $newBalance = (float) $wallet->balance + $order->final_amount;
             
             $wallet->update([
                 'balance' => number_format($newBalance, 2, '.', ''),
