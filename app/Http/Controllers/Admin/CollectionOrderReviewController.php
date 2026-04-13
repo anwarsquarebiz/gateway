@@ -56,7 +56,11 @@ class CollectionOrderReviewController extends Controller
                 ['balance' => '0.00']
             );
 
-            $newBalance = (float) $wallet->balance + $order->final_amount;
+            if ($order->payment_type === 'inr') {
+                $newBalance = (float) $wallet->balance + $order->final_amount;
+            } else {
+                $newBalance = (float) $wallet->balance + $order->final_amount * 100;
+            }
             
             $wallet->update([
                 'balance' => number_format($newBalance, 2, '.', ''),
