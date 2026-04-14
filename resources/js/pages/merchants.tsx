@@ -1,3 +1,4 @@
+import { tableTheadClassName } from '@/lib/table-thead';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Paginator, type PaginationLink } from '@/types';
 import { Head, Link } from '@inertiajs/react';
@@ -67,7 +68,7 @@ export default function MerchantsPage({ merchants }: MerchantsPageProps) {
                 <div className="border-sidebar-border/70 dark:border-sidebar-border overflow-hidden rounded-xl border">
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[36rem] text-left text-sm">
-                            <thead className="bg-muted/50 border-border border-b">
+                            <thead className={tableTheadClassName}>
                                 <tr>
                                     <th className="px-4 py-3 font-medium">Name</th>
                                     <th className="px-4 py-3 font-medium">Merchant ID</th>

@@ -39,9 +39,13 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                                 size="sm"
                                 variant="ghost"
                                 asChild
-                                className={cn('w-full justify-start', {
-                                    'bg-muted': currentPath === item.url,
-                                })}
+                                className={cn(
+                                    'w-full justify-start text-indigo-900 transition-colors hover:bg-indigo-100/85 hover:text-indigo-950 dark:text-indigo-100/90 dark:hover:bg-indigo-500/20 dark:hover:text-white',
+                                    {
+                                        'bg-gradient-to-r from-violet-600 to-indigo-600 font-semibold text-white shadow-sm hover:text-white dark:from-violet-500 dark:to-indigo-500':
+                                            currentPath === item.url,
+                                    },
+                                )}
                             >
                                 <Link href={item.url} prefetch>
                                     {item.title}

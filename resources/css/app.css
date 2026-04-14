@@ -72,98 +72,98 @@
     }
 }
 
-/* 🌞 MARVEL DENIM LIGHT THEME */
+/* 🌞 Indigo / violet light theme (aligned with app shell + sidebar) */
 :root {
-    --background: hsl(220, 25%, 98%);
-    --foreground: hsl(222, 47%, 11%);
+    --background: hsl(236, 33%, 98%);
+    --foreground: hsl(243, 30%, 14%);
 
     --card: hsl(0, 0%, 100%);
-    --card-foreground: hsl(222, 47%, 11%);
+    --card-foreground: hsl(243, 30%, 14%);
 
     --popover: hsl(0, 0%, 100%);
-    --popover-foreground: hsl(222, 47%, 11%);
+    --popover-foreground: hsl(243, 30%, 14%);
 
-    --primary: hsl(221, 83%, 32%);
-    --primary-foreground: hsl(210, 40%, 98%);
+    --primary: hsl(243, 75%, 48%);
+    --primary-foreground: hsl(0, 0%, 100%);
 
-    --secondary: hsl(220, 14%, 96%);
-    --secondary-foreground: hsl(222, 47%, 11%);
+    --secondary: hsl(234, 32%, 94%);
+    --secondary-foreground: hsl(243, 35%, 22%);
 
-    --muted: hsl(220, 14%, 96%);
-    --muted-foreground: hsl(220, 9%, 46%);
+    --muted: hsl(234, 28%, 94%);
+    --muted-foreground: hsl(243, 12%, 42%);
 
-    --accent: hsl(221, 60%, 90%);
-    --accent-foreground: hsl(221, 83%, 25%);
+    --accent: hsl(250, 92%, 94%);
+    --accent-foreground: hsl(263, 55%, 35%);
 
     --destructive: hsl(0, 72%, 51%);
     --destructive-foreground: hsl(0, 0%, 98%);
 
-    --border: hsl(220, 13%, 91%);
-    --input: hsl(220, 13%, 88%);
-    --ring: hsl(221, 83%, 32%);
+    --border: hsl(231, 28%, 88%);
+    --input: hsl(231, 26%, 86%);
+    --ring: hsl(243, 75%, 52%);
 
-    --chart-1: hsl(221, 83%, 32%);
-    --chart-2: hsl(210, 60%, 45%);
-    --chart-3: hsl(200, 50%, 35%);
-    --chart-4: hsl(230, 70%, 55%);
-    --chart-5: hsl(190, 65%, 50%);
+    --chart-1: hsl(243, 75%, 48%);
+    --chart-2: hsl(258, 85%, 58%);
+    --chart-3: hsl(231, 70%, 52%);
+    --chart-4: hsl(280, 65%, 55%);
+    --chart-5: hsl(210, 70%, 52%);
 
     --radius: 0.75rem;
 
-    --sidebar-background: hsl(220, 20%, 97%);
-    --sidebar-foreground: hsl(222, 47%, 20%);
-    --sidebar-primary: hsl(221, 83%, 32%);
+    --sidebar-background: hsl(236, 40%, 97%);
+    --sidebar-foreground: hsl(243, 28%, 22%);
+    --sidebar-primary: hsl(243, 75%, 48%);
     --sidebar-primary-foreground: hsl(0, 0%, 100%);
-    --sidebar-accent: hsl(220, 14%, 94%);
-    --sidebar-accent-foreground: hsl(222, 47%, 20%);
-    --sidebar-border: hsl(220, 13%, 90%);
-    --sidebar-ring: hsl(221, 83%, 32%);
+    --sidebar-accent: hsl(234, 45%, 92%);
+    --sidebar-accent-foreground: hsl(243, 35%, 22%);
+    --sidebar-border: hsl(231, 32%, 87%);
+    --sidebar-ring: hsl(243, 75%, 52%);
 }
 
-/* 🌙 MARVEL DENIM DARK THEME */
+/* 🌙 Indigo / violet dark theme */
 .dark {
-    --background: hsl(222, 47%, 8%);
-    --foreground: hsl(210, 40%, 98%);
+    --background: hsl(240, 22%, 9%);
+    --foreground: hsl(234, 30%, 96%);
 
-    --card: hsl(222, 47%, 10%);
-    --card-foreground: hsl(210, 40%, 98%);
+    --card: hsl(240, 24%, 11%);
+    --card-foreground: hsl(234, 30%, 96%);
 
-    --popover: hsl(222, 47%, 10%);
-    --popover-foreground: hsl(210, 40%, 98%);
+    --popover: hsl(240, 24%, 11%);
+    --popover-foreground: hsl(234, 30%, 96%);
 
-    --primary: hsl(210, 90%, 60%);
-    --primary-foreground: hsl(222, 47%, 10%);
+    --primary: hsl(234, 89%, 68%);
+    --primary-foreground: hsl(240, 24%, 10%);
 
-    --secondary: hsl(222, 30%, 18%);
-    --secondary-foreground: hsl(210, 40%, 98%);
+    --secondary: hsl(240, 22%, 16%);
+    --secondary-foreground: hsl(234, 30%, 96%);
 
-    --muted: hsl(222, 30%, 18%);
-    --muted-foreground: hsl(215, 20%, 65%);
+    --muted: hsl(240, 18%, 16%);
+    --muted-foreground: hsl(231, 18%, 66%);
 
-    --accent: hsl(222, 30%, 20%);
-    --accent-foreground: hsl(210, 40%, 98%);
+    --accent: hsl(258, 35%, 22%);
+    --accent-foreground: hsl(250, 85%, 92%);
 
     --destructive: hsl(0, 63%, 45%);
     --destructive-foreground: hsl(210, 40%, 98%);
 
-    --border: hsl(222, 30%, 18%);
-    --input: hsl(222, 30%, 18%);
-    --ring: hsl(210, 90%, 60%);
+    --border: hsl(240, 18%, 18%);
+    --input: hsl(240, 18%, 20%);
+    --ring: hsl(234, 89%, 68%);
 
-    --chart-1: hsl(210, 90%, 60%);
-    --chart-2: hsl(200, 70%, 55%);
-    --chart-3: hsl(190, 60%, 50%);
-    --chart-4: hsl(230, 80%, 65%);
-    --chart-5: hsl(180, 70%, 55%);
+    --chart-1: hsl(234, 89%, 68%);
+    --chart-2: hsl(258, 85%, 65%);
+    --chart-3: hsl(217, 80%, 60%);
+    --chart-4: hsl(280, 70%, 62%);
+    --chart-5: hsl(200, 75%, 58%);
 
-    --sidebar-background: hsl(222, 47%, 9%);
-    --sidebar-foreground: hsl(210, 40%, 90%);
-    --sidebar-primary: hsl(210, 90%, 60%);
-    --sidebar-primary-foreground: hsl(222, 47%, 10%);
-    --sidebar-accent: hsl(222, 30%, 18%);
-    --sidebar-accent-foreground: hsl(210, 40%, 90%);
-    --sidebar-border: hsl(222, 30%, 18%);
-    --sidebar-ring: hsl(210, 90%, 60%);
+    --sidebar-background: hsl(240, 24%, 10%);
+    --sidebar-foreground: hsl(234, 24%, 92%);
+    --sidebar-primary: hsl(234, 89%, 68%);
+    --sidebar-primary-foreground: hsl(240, 24%, 10%);
+    --sidebar-accent: hsl(258, 28%, 18%);
+    --sidebar-accent-foreground: hsl(234, 24%, 92%);
+    --sidebar-border: hsl(240, 18%, 18%);
+    --sidebar-ring: hsl(234, 89%, 68%);
 }
 
 @layer base {

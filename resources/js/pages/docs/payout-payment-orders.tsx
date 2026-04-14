@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { tableTheadClassName } from '@/lib/table-thead';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -67,8 +68,8 @@ export default function PayoutPaymentOrdersDocs({ payoutEndpoint }: PayoutDocsPr
                     <CardContent>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left text-sm">
-                                <thead>
-                                    <tr className="border-border border-b">
+                                <thead className={tableTheadClassName}>
+                                    <tr>
                                         <th className="py-2 pr-4 font-medium">Field</th>
                                         <th className="py-2 pr-4 font-medium">Required</th>
                                         <th className="py-2 font-medium">Description</th>

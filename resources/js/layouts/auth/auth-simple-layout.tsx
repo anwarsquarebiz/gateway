@@ -10,7 +10,7 @@ interface AuthLayoutProps {
 
 export default function AuthSimpleLayout({ children, title, description }: AuthLayoutProps) {
     return (
-        <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-gradient-to-br from-indigo-50/90 via-background to-violet-50/80 p-6 dark:from-indigo-950/40 dark:via-background dark:to-violet-950/30 md:p-10">
             <div className="w-full max-w-sm">
                 <div className="flex flex-col gap-8">
                     <div className="flex flex-col items-center gap-4">

@@ -1,3 +1,4 @@
+import { tableTheadClassName } from '@/lib/table-thead';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -63,7 +64,7 @@ export default function PayoutsPage({ withdrawalRequests }: PayoutsPageProps) {
                 <div className="border-sidebar-border/70 dark:border-sidebar-border overflow-hidden rounded-xl border">
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[56rem] text-left text-sm">
-                            <thead className="bg-muted/50 border-border border-b">
+                            <thead className={tableTheadClassName}>
                                 <tr>
                                     <th className="px-4 py-3 font-medium">ID</th>
                                     <th className="px-4 py-3 font-medium">User</th>

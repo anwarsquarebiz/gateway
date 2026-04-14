@@ -1,5 +1,6 @@
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { tableTheadClassName } from '@/lib/table-thead';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Paginator, type PaginationLink, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -134,9 +135,9 @@ export default function CollectionOrders({ orders, isAdmin = false }: Collection
                 <InputError message={reviewError} />
 
                 <div className="border-sidebar-border/70 dark:border-sidebar-border overflow-hidden rounded-xl border">
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-scroll">
                         <table className="w-full min-w-[76rem] text-left text-sm">
-                            <thead className="bg-muted/50 border-border border-b">
+                            <thead className={tableTheadClassName}>
                                 <tr>
                                     <th className="px-4 py-3 font-medium">Order no</th>
                                     <th className="px-4 py-3 font-medium">Merchant order no</th>

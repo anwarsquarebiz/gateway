@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { tableTheadClassName } from '@/lib/table-thead';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
@@ -468,7 +469,7 @@ export default function Withdraw({
                         <div className="border-sidebar-border/70 dark:border-sidebar-border mt-3 overflow-hidden rounded-xl border">
                             <div className="overflow-x-auto">
                                 <table className="w-full min-w-[40rem] text-left text-sm">
-                                    <thead className="bg-muted/50 border-border border-b">
+                                    <thead className={tableTheadClassName}>
                                         <tr>
                                             <th className="px-4 py-3 font-medium">Bank Name</th>
                                             <th className="px-4 py-3 font-medium">Account Holder</th>
@@ -518,7 +519,7 @@ export default function Withdraw({
                         <div className="border-sidebar-border/70 dark:border-sidebar-border mt-3 overflow-hidden rounded-xl border">
                             <div className="overflow-x-auto">
                                 <table className="w-full min-w-[32rem] text-left text-sm">
-                                    <thead className="bg-muted/50 border-border border-b">
+                                    <thead className={tableTheadClassName}>
                                         <tr>
                                             <th className="px-4 py-3 font-medium">UPI ID</th>
                                             <th className="px-4 py-3 font-medium">Actions</th>
@@ -559,7 +560,7 @@ export default function Withdraw({
                         <div className="border-sidebar-border/70 dark:border-sidebar-border mt-3 overflow-hidden rounded-xl border">
                             <div className="overflow-x-auto">
                                 <table className="w-full min-w-[40rem] text-left text-sm">
-                                    <thead className="bg-muted/50 border-border border-b">
+                                    <thead className={tableTheadClassName}>
                                         <tr>
                                             <th className="px-4 py-3 font-medium">Wallet public address</th>
                                             <th className="px-4 py-3 font-medium">Blockchain</th>

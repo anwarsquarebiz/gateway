@@ -36,7 +36,8 @@ const rightNavItems: NavItem[] = [
     },
 ];
 
-const activeItemStyles = 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
+const activeItemStyles =
+    'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm dark:from-violet-500 dark:to-indigo-500';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -48,7 +49,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const getInitials = useInitials();
     return (
         <>
-            <div className="border-sidebar-border/80 border-b">
+            <div className="border-b border-indigo-200/60 bg-gradient-to-r from-white via-indigo-50/35 to-violet-50/45 shadow-sm dark:border-indigo-500/25 dark:from-zinc-950 dark:via-indigo-950/35 dark:to-violet-950/25">
                 <div className="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
                     {/* Mobile Menu */}
                     <div className="lg:hidden">
@@ -58,7 +59,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <Menu className="h-5 w-5" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar">
+                            <SheetContent
+                                side="left"
+                                className="flex h-full w-64 flex-col items-stretch justify-between border-indigo-200/50 bg-gradient-to-b from-indigo-50/95 via-white to-violet-50/90 dark:border-indigo-500/20 dark:from-indigo-950/50 dark:via-zinc-950 dark:to-violet-950/40"
+                            >
                                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                                 <SheetHeader className="flex justify-start text-left">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
@@ -67,7 +71,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                     <div className="flex h-full flex-col justify-between text-sm">
                                         <div className="flex flex-col space-y-4">
                                             {mainNavItems.map((item) => (
-                                                <Link key={item.title} href={item.url} className="flex items-center space-x-2 font-medium">
+                                                <Link
+                                                    key={item.title}
+                                                    href={item.url}
+                                                    className="flex items-center space-x-2 rounded-md px-2 py-1.5 font-medium text-indigo-900 transition-colors hover:bg-indigo-100/90 dark:text-indigo-100 dark:hover:bg-indigo-500/25"
+                                                >
                                                     {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
                                                     <span>{item.title}</span>
                                                 </Link>
@@ -81,7 +89,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                     href={item.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center space-x-2 font-medium"
+                                                    className="flex items-center space-x-2 rounded-md px-2 py-1.5 font-medium text-indigo-900 transition-colors hover:bg-indigo-100/90 dark:text-indigo-100 dark:hover:bg-indigo-500/25"
                                                 >
                                                     {item.icon && <Icon iconNode={item.icon} className="h-5 w-5" />}
                                                     <span>{item.title}</span>
@@ -109,14 +117,16 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                             className={cn(
                                                 navigationMenuTriggerStyle(),
                                                 page.url === item.url && activeItemStyles,
-                                                'h-9 cursor-pointer px-3',
+                                                'h-9 cursor-pointer px-3 transition-colors hover:bg-indigo-100/80 hover:text-indigo-950 dark:hover:bg-indigo-500/20 dark:hover:text-white',
+                                                page.url !== item.url &&
+                                                    'text-indigo-900/90 dark:text-indigo-100/90',
                                             )}
                                         >
                                             {item.icon && <Icon iconNode={item.icon} className="mr-2 h-4 w-4" />}
                                             {item.title}
                                         </Link>
                                         {page.url === item.url && (
-                                            <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                                            <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-gradient-to-r from-violet-500 to-indigo-600"></div>
                                         )}
                                     </NavigationMenuItem>
                                 ))}
@@ -171,8 +181,8 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                 </div>
             </div>
             {breadcrumbs.length > 1 && (
-                <div className="border-sidebar-border/70 flex w-full border-b">
-                    <div className="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
+                <div className="flex w-full border-b border-indigo-200/45 bg-indigo-50/30 dark:border-indigo-500/20 dark:bg-indigo-950/20">
+                    <div className="mx-auto flex h-12 w-full items-center justify-start px-4 text-indigo-700/80 md:max-w-7xl dark:text-indigo-200/80">
                         <Breadcrumbs breadcrumbs={breadcrumbs} />
                     </div>
                 </div>

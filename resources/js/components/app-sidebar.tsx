@@ -27,6 +27,30 @@ import {
     Wallet,
 } from 'lucide-react';
 import AppLogo from './app-logo';
+import { cn } from '@/lib/utils';
+
+/** Vivid sidebar shell: gradient panel + clear hover / active states for nav links */
+const sidebarVividClassName = cn(
+    // Inner sidebar surface (gradient + soft border)
+    '[&_[data-sidebar=sidebar]]:border [&_[data-sidebar=sidebar]]:border-indigo-200/60 [&_[data-sidebar=sidebar]]:bg-gradient-to-b [&_[data-sidebar=sidebar]]:from-indigo-50/95 [&_[data-sidebar=sidebar]]:via-white [&_[data-sidebar=sidebar]]:to-violet-50/90',
+    'dark:[&_[data-sidebar=sidebar]]:border-indigo-400/25 dark:[&_[data-sidebar=sidebar]]:from-indigo-950/50 dark:[&_[data-sidebar=sidebar]]:via-zinc-950/80 dark:[&_[data-sidebar=sidebar]]:to-violet-950/40',
+    // Section labels
+    '[&_[data-sidebar=group-label]]:font-semibold [&_[data-sidebar=group-label]]:text-indigo-700/90',
+    'dark:[&_[data-sidebar=group-label]]:text-indigo-200/90',
+    // Primary menu buttons — hover
+    '[&_[data-sidebar=menu-button]:hover]:shadow-sm [&_[data-sidebar=menu-button]:hover]:!bg-indigo-100/90 [&_[data-sidebar=menu-button]:hover]:!text-indigo-950',
+    'dark:[&_[data-sidebar=menu-button]:hover]:!bg-indigo-500/25 dark:[&_[data-sidebar=menu-button]:hover]:!text-indigo-50',
+    // Primary menu buttons — active (current route)
+    '[&_[data-sidebar=menu-button][data-active=true]]:shadow-md [&_[data-sidebar=menu-button][data-active=true]]:!bg-gradient-to-r [&_[data-sidebar=menu-button][data-active=true]]:!from-violet-600 [&_[data-sidebar=menu-button][data-active=true]]:!to-indigo-600 [&_[data-sidebar=menu-button][data-active=true]]:!text-white',
+    '[&_[data-sidebar=menu-button][data-active=true]_svg]:!text-white [&_[data-sidebar=menu-button][data-active=true]_span]:!text-white',
+    'dark:[&_[data-sidebar=menu-button][data-active=true]]:!from-violet-500 dark:[&_[data-sidebar=menu-button][data-active=true]]:!to-indigo-500',
+    // Submenu rail + items
+    '[&_[data-sidebar=menu-sub]]:!border-indigo-200/70 dark:[&_[data-sidebar=menu-sub]]:!border-indigo-500/30',
+    '[&_[data-sidebar=menu-sub-button]:hover]:!bg-indigo-100/75 [&_[data-sidebar=menu-sub-button]:hover]:!text-indigo-950',
+    'dark:[&_[data-sidebar=menu-sub-button]:hover]:!bg-indigo-500/20 dark:[&_[data-sidebar=menu-sub-button]:hover]:!text-indigo-50',
+    '[&_[data-sidebar=menu-sub-button][data-active=true]]:!border-l-2 [&_[data-sidebar=menu-sub-button][data-active=true]]:!border-indigo-500 [&_[data-sidebar=menu-sub-button][data-active=true]]:!bg-indigo-500/12 [&_[data-sidebar=menu-sub-button][data-active=true]]:!font-semibold [&_[data-sidebar=menu-sub-button][data-active=true]]:!text-indigo-900',
+    'dark:[&_[data-sidebar=menu-sub-button][data-active=true]]:!bg-indigo-400/15 dark:[&_[data-sidebar=menu-sub-button][data-active=true]]:!text-indigo-50',
+);
 
 const mainNavItems: NavItem[] = [
     {
@@ -135,7 +159,7 @@ export function AppSidebar() {
     });
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="icon" variant="inset" className={sidebarVividClassName}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
