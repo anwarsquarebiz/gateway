@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\CollectionOrderStatus;
+use App\Enums\CollectionPaymentType;
 use App\Http\Controllers\Controller;
 use App\Models\BrokerCommission;
 use App\Models\CollectionOrder;
@@ -56,10 +57,17 @@ class CollectionOrderReviewController extends Controller
                 ['balance' => '0.00']
             );
 
-            if ($order->payment_type === 'inr') {
+            Log::info('Payment type', [
+                'payment_type' => $order->payment_type,
+            ]);
+
+            // 
+            if ($order->payment_type === CollectionPaymentType::Inr) {
                 $newBalance = (float) $wallet->balance + $order->final_amount;
-            } else {
+            } else if ($order->payment_type === CollectionPaymentType::Usdt) {
                 $newBalance = (float) $wallet->balance + $order->final_amount * 100;
+            } else {
+                return;
             }
             
             $wallet->update([

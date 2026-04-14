@@ -16,20 +16,23 @@
     </title>
     <style>
         :root {
-            --bg: #f4f4f5;
+            --bg: #f7f7ff;
             --card: #ffffff;
-            --border: #e4e4e7;
-            --text: #18181b;
-            --muted: #71717a;
-            --primary: #18181b;
-            --radius: 12px;
+            --border: #d7d7ff;
+            --text: #1f1f3d;
+            --muted: #626284;
+            --primary: #5b5bd6;
+            --radius: 16px;
         }
         * { box-sizing: border-box; }
         body {
             font-family: ui-sans-serif, system-ui, sans-serif;
             margin: 0;
             min-height: 100vh;
-            background: var(--bg);
+            background:
+                radial-gradient(circle at 12% 18%, #dbeafe 0%, transparent 40%),
+                radial-gradient(circle at 88% 82%, #fae8ff 0%, transparent 42%),
+                linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
             color: var(--text);
             padding: 1.25rem;
         }
@@ -39,7 +42,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 1.25rem 1.25rem 1.5rem;
-            box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+            box-shadow: 0 16px 30px rgb(61 77 172 / 0.12);
         }
         .title {
             font-size: 1.125rem;
@@ -64,7 +67,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: var(--muted);
+            color: #5656c9;
             margin-bottom: 0.75rem;
         }
         .timer-row {
@@ -94,22 +97,31 @@
         }
         .apps {
             display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.65rem;
         }
         .app-btn {
-            display: block;
-            text-align: center;
-            padding: 0.65rem 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+            padding: 0.7rem 0.75rem;
+            border-radius: 10px;
+            border: 1px solid #d7d7ff;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5ff 100%);
             color: var(--text);
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
+            box-shadow: 0 3px 8px rgb(79 70 229 / 0.08);
         }
-        .app-btn:active { background: #f4f4f5; }
+        .app-btn img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        .app-btn:active { transform: translateY(1px); }
+        .app-label { font-size: 0.82rem; }
         .manual-steps { font-size: 0.8125rem; color: var(--muted); margin: 0 0 0.75rem; padding-left: 1.1rem; }
         .manual-steps li { margin-bottom: 0.35rem; }
         .copy-row {
@@ -248,9 +260,18 @@
                 <div class="section">
                     <div class="section-label">Pay with app</div>
                     <div class="apps">
-                        <a class="app-btn" href="{{ $upiIntents['paytm'] }}">Paytm</a>
-                        <a class="app-btn" href="{{ $upiIntents['phonepe'] }}">PhonePe</a>
-                        <a class="app-btn" href="{{ $upiIntents['upi_pay'] }}">Other UPI</a>
+                        <a class="app-btn" href="{{ $upiIntents['paytm'] }}">
+                            <img src="/images/paytm.svg" alt="Paytm" width="50" height="50">
+                            <!-- <span class="app-label">Paytm</span> -->
+                        </a>
+                        <a class="app-btn" href="{{ $upiIntents['phonepe'] }}">
+                            <img src="/images/phonepe.svg" alt="PhonePe" width="50" height="50">
+                            <!-- <span class="app-label">PhonePe</span> -->
+                        </a>
+                        <a class="app-btn" href="{{ $upiIntents['upi_pay'] }}">
+                            <img src="/images/upi.svg" alt="Other UPI" width="50" height="50">
+                            <!-- <span class="app-label">Other UPI</span> -->
+                        </a>
                     </div>
                 </div>
 
