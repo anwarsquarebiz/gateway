@@ -49,6 +49,12 @@
             font-weight: 600;
             margin: 0;
             letter-spacing: -0.02em;
+            text-align: center;
+            color: #5656c9;
+            background: #f5f5ff;
+            padding: 0.5rem 0;
+            border-radius: 8px;
+            font-weight: 800;
         }
         .amount {
             font-size: 1.5rem;
