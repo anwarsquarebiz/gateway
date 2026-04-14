@@ -14,8 +14,30 @@ import { Link, usePage } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
 
+/** Path only — query/hash break strict equality on paginated routes (e.g. /orders?page=2). */
+function pathnameFromPageUrl(url: string): string {
+    try {
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return new URL(url).pathname;
+        }
+    } catch {
+        // fall through
+    }
+    const q = url.indexOf('?');
+    const h = url.indexOf('#');
+    let end = url.length;
+    if (q !== -1) {
+        end = Math.min(end, q);
+    }
+    if (h !== -1) {
+        end = Math.min(end, h);
+    }
+    return url.slice(0, end);
+}
+
 function isRouteActive(pageUrl: string, itemUrl: string): boolean {
-    return pageUrl === itemUrl || pageUrl.startsWith(itemUrl + '/');
+    const path = pathnameFromPageUrl(pageUrl);
+    return path === itemUrl || path.startsWith(itemUrl + '/');
 }
 
 function anyChildActive(pageUrl: string, items: NavItem[]): boolean {
@@ -73,7 +95,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         <NavCollapsible key={item.title} item={item} />
                     ) : (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild isActive={item.url === page.url}>
+                            <SidebarMenuButton asChild isActive={item.url === pathnameFromPageUrl(page.url)}>
                                 <Link href={item.url} prefetch>
                                     {item.icon && <item.icon />}
                                     <span>{item.title}</span>
