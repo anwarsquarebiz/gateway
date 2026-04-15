@@ -199,7 +199,7 @@ export default function CollectionOrders({ orders, isAdmin = false }: Collection
                                             <td className="text-muted-foreground px-4 py-3">{row.callback_status ?? '—'}</td>
                                             <td className="text-muted-foreground px-4 py-3 whitespace-nowrap">
                                                 {formatDate(row.created_at)}
-                                            </td>
+                                            </td> 
                                             {isAdminUser && (
                                                 <td className="px-4 py-3 text-right">
                                                     {canReviewOrder(row.status) ? (
