@@ -78,6 +78,10 @@ const mainNavItems: NavItem[] = [
                 url: '/fund-details',
                 // icon: Wallet,
             },
+            {
+                title: 'Withdrawal Requests',
+                url: '/withdrawal-requests',
+            },
         ],
     },
     {

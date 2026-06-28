@@ -12,6 +12,7 @@ use App\Http\Controllers\CollectionOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FundDetailController;
 use App\Http\Controllers\MerchantApiKeyController;
+use App\Http\Controllers\MerchantWithdrawalRequestController;
 use App\Http\Controllers\NowPaymentsIpnController;
 use App\Http\Controllers\PayinDocsController;
 use App\Http\Controllers\PaymentOrderController;
@@ -55,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('payment-orders', [PaymentOrderController::class, 'index'])->name('payment-orders');
 
     Route::get('fund-details', [FundDetailController::class, 'index'])->name('fund-details');
+    Route::get('withdrawal-requests', [MerchantWithdrawalRequestController::class, 'index'])->name('withdrawal-requests.index');
     Route::get('merchants', [BrokerMerchantController::class, 'index'])->name('merchants.index');
     Route::get('commission', [BrokerCommissionController::class, 'index'])->name('commission.index');
     Route::get('payouts', [BrokerPayoutController::class, 'index'])->name('payouts.index');
