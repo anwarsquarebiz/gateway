@@ -28,7 +28,8 @@ class WithdrawController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $feePercent = (float) config('withdraw.fee_percent');
+        // $feePercent = (float) config('withdraw.fee_percent');
+        $feePercent = (float) $user->payout_fee_percent;
         $feeFixed = (float) config('withdraw.fee_fixed_inr');
 
         $balance = $this->resolveBalance($user);
