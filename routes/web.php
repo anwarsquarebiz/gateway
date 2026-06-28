@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminUpiIdController;
 use App\Http\Controllers\Admin\AdminUsdtAddressController;
 use App\Http\Controllers\Admin\CollectionOrderReviewController;
+use App\Http\Controllers\Admin\WithdrawalRequestReviewController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BrokerCommissionController;
@@ -110,6 +111,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('collection-orders/{collectionOrder}/reject', [CollectionOrderReviewController::class, 'reject'])
             ->middleware('throttle:60,1')
             ->name('collection-orders.reject');
+
+        Route::post('withdrawal-requests/{withdrawalRequest}/accept', [WithdrawalRequestReviewController::class, 'accept'])
+            ->middleware('throttle:60,1')
+            ->name('withdrawal-requests.accept');
+        Route::post('withdrawal-requests/{withdrawalRequest}/reject', [WithdrawalRequestReviewController::class, 'reject'])
+            ->middleware('throttle:60,1')
+            ->name('withdrawal-requests.reject');
     });
 });
 

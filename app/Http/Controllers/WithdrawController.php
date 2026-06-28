@@ -75,11 +75,15 @@ class WithdrawController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $feePercent = (float) config('withdraw.fee_percent');
-        $feeFixed = (float) config('withdraw.fee_fixed_inr');
 
+        
         /** @var User $user */
         $user = $request->user();
+
+        // $feePercent = (float) config('withdraw.fee_percent');
+        $feePercent = (float) $user->payout_fee_percent;
+        $feeFixed = (float) config('withdraw.fee_fixed_inr');
+
 
         $validated = $request->validate([
             'method' => ['required', 'string', Rule::in(['bank', 'usdt', 'upi'])],
